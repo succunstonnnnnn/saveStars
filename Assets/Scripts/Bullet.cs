@@ -19,17 +19,9 @@ public class Bullet : MonoBehaviour
     {
         if (other.CompareTag("Enemy"))
         {
-            GameObject spark = new GameObject("Spark");
-            spark.transform.position = other.transform.position;
-            SpriteRenderer sr = spark.AddComponent<SpriteRenderer>();
-            sr.sprite = GetComponent<SpriteRenderer>().sprite;
-            sr.color = new Color(1f, 0.5f, 0f);
-            spark.transform.localScale = new Vector3(1f, 1f, 1);
-            Destroy(spark, 0.15f);
-
             Destroy(other.gameObject);
             Destroy(gameObject);
-            GameManager.AddScore();
+            GameManager.EnemyKilled();
         }
     }
 }
