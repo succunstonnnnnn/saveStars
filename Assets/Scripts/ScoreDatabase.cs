@@ -1,9 +1,14 @@
 using System;
-using System.Runtime.InteropServices;
 using UnityEngine;
+
+#if !UNITY_WEBGL || UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 
 public static class ScoreDatabase
 {
+#if !UNITY_WEBGL || UNITY_EDITOR
+
     const string LIB = "sqlite3";
     const int SQLITE_ROW = 100;
 
@@ -108,4 +113,33 @@ public static class ScoreDatabase
         }
         catch (Exception e) { Debug.LogWarning("ScoreDatabase.GetHighScore failed: " + e.Message); return 0; }
     }
+
+#else
+    const string HighScoreKey = "SaveStars_HighScore";
+
+    public static void Initialize()
+    {
+        
+    }
+
+    public static void SaveScore(int score)
+    {
+        try
+        {
+            int current = PlayerPrefs.GetInt(HighScoreKey, 0);
+            if (score > current)
+            {
+                PlayerPrefs.SetInt(HighScoreKey, score);
+                PlayerPrefs.Save();
+            }
+        }
+        catch (Exception e) { Debug.LogWarning("ScoreDatabase.SaveScore (WebGL) failed: " + e.Message); }
+    }
+
+    public static int GetHighScore()
+    {
+        try { return PlayerPrefs.GetInt(HighScoreKey, 0); }
+        catch (Exception e) { Debug.LogWarning("ScoreDatabase.GetHighScore (WebGL) failed: " + e.Message); return 0; }
+    }
+#endif
 }
